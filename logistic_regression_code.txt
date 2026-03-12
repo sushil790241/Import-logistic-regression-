@@ -1,0 +1,129 @@
+Logistic Regression – Python Example (Long Code)
+
+This file contains: 1. Logistic Regression using scikit-learn 2.
+Logistic Regression implemented from scratch
+
+  --------------------------
+  PART 1: IMPORT LIBRARIES
+  --------------------------
+
+import numpy as np import pandas as pd import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split from
+sklearn.linear_model import LogisticRegression from sklearn.metrics
+import accuracy_score, confusion_matrix, classification_report
+
+  -------------------------------
+  PART 2: CREATE SAMPLE DATASET
+  -------------------------------
+
+Creating a simple dataset
+
+data = { “Hours_Studied”: [1,2,3,4,5,6,7,8,9,10], “Pass”:
+[0,0,0,0,1,1,1,1,1,1] }
+
+df = pd.DataFrame(data)
+
+X = df[[“Hours_Studied”]] y = df[“Pass”]
+
+  --------------------------
+  PART 3: TRAIN TEST SPLIT
+  --------------------------
+
+X_train, X_test, y_train, y_test = train_test_split( X, y,
+test_size=0.2, random_state=42 )
+
+  -------------------------------------------
+  PART 4: LOGISTIC REGRESSION USING SKLEARN
+  -------------------------------------------
+
+model = LogisticRegression()
+
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print(“Predictions:”, y_pred)
+
+print(“Accuracy:”, accuracy_score(y_test, y_pred))
+
+print(“Confusion Matrix:”) print(confusion_matrix(y_test, y_pred))
+
+print(“Classification Report:”) print(classification_report(y_test,
+y_pred))
+
+  ------------------------------------------
+  PART 5: LOGISTIC REGRESSION FROM SCRATCH
+  ------------------------------------------
+
+Sigmoid Function
+
+def sigmoid(z): return 1 / (1 + np.exp(-z))
+
+Cost Function
+
+def compute_cost(X, y, weights): m = len(y) predictions =
+sigmoid(np.dot(X, weights))
+
+    cost = -(1/m) * np.sum(
+        y * np.log(predictions) + (1-y) * np.log(1-predictions)
+    )
+
+    return cost
+
+Gradient Descent
+
+def gradient_descent(X, y, weights, learning_rate, iterations):
+
+    m = len(y)
+
+    for i in range(iterations):
+        
+        predictions = sigmoid(np.dot(X, weights))
+        
+        gradient = np.dot(X.T, (predictions - y)) / m
+        
+        weights = weights - learning_rate * gradient
+        
+        if i % 100 == 0:
+            cost = compute_cost(X, y, weights)
+            print("Iteration:", i, "Cost:", cost)
+
+    return weights
+
+Prepare data for manual model
+
+X_manual = np.c_[np.ones((len(X), 1)), X]
+
+weights = np.zeros(X_manual.shape[1])
+
+weights = gradient_descent( X_manual, y.values, weights,
+learning_rate=0.01, iterations=1000 )
+
+print(“Final Weights:”, weights)
+
+Prediction Function
+
+def predict(X, weights):
+
+    X = np.c_[np.ones((len(X), 1)), X]
+
+    probabilities = sigmoid(np.dot(X, weights))
+
+    return [1 if p >= 0.5 else 0 for p in probabilities]
+
+predictions = predict(X.values, weights)
+
+print(“Manual Model Predictions:”, predictions)
+
+  -----------------------
+  PART 6: VISUALIZATION
+  -----------------------
+
+plt.scatter(df[“Hours_Studied”], df[“Pass”])
+
+plt.xlabel(“Hours Studied”) plt.ylabel(“Pass (0 = No, 1 = Yes)”)
+
+plt.title(“Logistic Regression Example”)
+
+plt.show()
